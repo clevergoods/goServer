@@ -46,38 +46,30 @@ func writeFile() {
 			_, err := f.Write(msg)
 			check(err)
 			fmt.Println("from chan", counter)
-			fok := true
-
 			counter++
-			for ; fok; {
-				msg, fok = m[counter]
-				if fok {
-					_, err := f.Write(msg)
-					check(err)
-					fmt.Println("write from m", counter)
-					delete(m, counter)
-					counter++
-				}
-			}
+			writeFromMap()
 
 		}else {
 			m[s.ID] = s.Body
-			fok := true
-			var msg []byte
-			for ; fok; {
-				msg, fok = m[counter]
-				if fok {
-					_, err := f.Write(msg)
-					check(err)
-					fmt.Println("from m", counter)
-					delete(m, counter)
-					counter++
-				}
-			}
+			writeFromMap()
 		}
 	}
 }
 
+func writeFromMap() {
+	fok := true
+	var msg []byte
+	for ; fok; {
+		msg, fok = m[counter]
+		if fok {
+			_, err := f.Write(msg)
+			check(err)
+			fmt.Println("from m", counter)
+			delete(m, counter)
+			counter++
+		}
+	}
+}
 func checkMd5Sum(reply []byte) {
 	var msg Message
 	err := json.Unmarshal(reply, &msg)
